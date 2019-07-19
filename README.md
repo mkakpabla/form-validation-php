@@ -23,3 +23,4 @@ We will have in our example above a table containing two errors
  * `notEmpty` - Field did not be empty
  * `alpha` - Content of field must be alphabetic
  * `integer` - Must be integer number
+ * `text` - Field must be a text
