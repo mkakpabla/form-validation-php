@@ -16,10 +16,10 @@ class Validator
      * @var array
      */
     public $patterns = [
-
         'alpha'         => '/[a-zA-Z]+/',
         'slug'          => '/[a-zA-Z0-9-]+/',
-        'integer'       => '/[0-9]+/'
+        'integer'       => '/[0-9]+/',
+        'text'          => '/[a-zA-Z0-9-_ ]+/'
     ];
 
     /**
@@ -31,7 +31,8 @@ class Validator
         'alpha'      => 'Le %s  n\'est pas valide(Alphabétique)',
         'notEmpty'   => 'Le champ %s ne peut être vide',
         'integer'    => 'le %s doit être un entier(Ex: 1234)',
-        'email'      => "Le champ %s n'est pas un email valide"
+        'email'      => "Le champ %s n'est pas un email valide",
+        'text'       => "Le champ %s n'est pas un text valide"
     ];
     /**
      * @var array
@@ -87,11 +88,14 @@ class Validator
     }
 
     /**
-     * @return array
+     * @return array|string
      */
-    public function errors(): array
+    public function errors(?string $key = null)
     {
-        return $this->errors;
+        if(is_null($key)) {
+            return $this->errors;
+        }
+        return $this->errors[$key];
     }
 
     /**
@@ -180,6 +184,14 @@ class Validator
     {
         $value = $this->getValue($key);
         if(!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            $this->addError($key, $rule);
+        }
+    }
+
+    private function text(string $key, string $rule)
+    {
+        $value = $this->getValue($key);
+        if(!preg_match($this->patterns[$rule], $value)) {
             $this->addError($key, $rule);
         }
     }

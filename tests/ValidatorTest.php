@@ -9,9 +9,7 @@ class ValidatorTest extends TestCase
 
     public function testRequired()
     {
-        $data = [
-
-        ];
+        $data = [];
         $validator = new Validator([
             'title'  => 'required|notEmpty|alpha',
             'author' => 'required|notEmpty'
@@ -96,5 +94,22 @@ class ValidatorTest extends TestCase
         $validator->validate($data);
         $this->assertContains('Le title  n\'est pas valide(Alphabétique)', $validator->errors());
         $this->assertContains('Le champ email n\'est pas un email valide', $validator->errors());
+    }
+
+    public function testText()
+    {
+        $data = [
+            'author' => 'Germaine',
+            'title' => 11111, 
+            'summary' => ''
+        ];
+        $validator = new Validator([
+            'title'  => 'required|notEmpty|alpha',
+            'author' => 'required|notEmpty',
+            'email'  => 'email',
+            'summary' => 'text'
+        ]);
+        $validator->validate($data);
+        $this->assertEquals("Le champ summary n'est pas un text valide", $validator->errors('summary'));
     }
 }
