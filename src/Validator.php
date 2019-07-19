@@ -30,7 +30,8 @@ class Validator
         'required'   => 'Le champ %s est requis',
         'alpha'      => 'Le %s  n\'est pas valide(Alphabétique)',
         'notEmpty'   => 'Le champ %s ne peut être vide',
-        'integer'    => 'le %s doit être un entier(Ex: 1234)'
+        'integer'    => 'le %s doit être un entier(Ex: 1234)',
+        'email'      => "Le champ %s n'est pas un email valide"
     ];
     /**
      * @var array
@@ -171,6 +172,14 @@ class Validator
     {
         $value = $this->getValue($key);
         if (!preg_match($this->patterns[$rule], $value)) {
+            $this->addError($key, $rule);
+        }
+    }
+
+    private function email(string $key, string $rule)
+    {
+        $value = $this->getValue($key);
+        if(!filter_var($value, FILTER_VALIDATE_EMAIL)) {
             $this->addError($key, $rule);
         }
     }
