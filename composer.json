@@ -1,0 +1,26 @@
+{
+    "name": "mkakpabla/validation",
+    "description": "A Simple data Validation in PHP",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michel Akpabla",
+            "email": "michel.akpabla2@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "Zenthos\\Validation\\": "src",
+            "Tests\\": "tests"
+        }
+    },
+    "require": {
+        "php": ">=7.1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.2",
+        "symfony/var-dumper": "^4.3"
+    }
+}
