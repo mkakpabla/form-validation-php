@@ -1,6 +1,21 @@
 # ZenValidator
 Zen Validator is a simple PHP validation library
 
+## Usage
+To use it we create a new validation instance which takes into account the validation rules which is an array. Here is an exemple
+```php
+$validator = new Validator([
+  'email'  => 'required|email',
+  'title' => 'required|notEmpty'
+  ]);
+```
+After:
+```php
+$data = [];
+$validator->validate($data)
+```
+We will have in our example above a table containing two errors
+
 ## Validation Rules
 
  * `required` - Field is required
