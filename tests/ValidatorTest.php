@@ -77,7 +77,21 @@ class ValidatorTest extends TestCase
             'author' => 'required|notEmpty'
         ]);
         $validator->validate($data);
-        $this->assertContains('Le title  n\'est pas valide(Alphabétique)', $validator->errors());
+        $this->assertContains('Le title n\'est pas valide(Alphabétique)', $validator->errors());
+    }
+
+    public function testAlphaNum()
+    {
+        $data = [
+            'author' => 'Germaine',
+            'title' => ''
+        ];
+        $validator = new Validator([
+            'title'  => 'alphaNum',
+            'author' => 'required|notEmpty'
+        ]);
+        $validator->validate($data);
+        $this->assertContains('Le title n\'est pas valide(Alphanumérique)', $validator->errors());
     }
 
     public function testEmail()
@@ -92,7 +106,7 @@ class ValidatorTest extends TestCase
             'email'  => 'email'
         ]);
         $validator->validate($data);
-        $this->assertContains('Le title  n\'est pas valide(Alphabétique)', $validator->errors());
+        $this->assertContains('Le title n\'est pas valide(Alphabétique)', $validator->errors());
         $this->assertContains('Le champ email n\'est pas un email valide', $validator->errors());
     }
 

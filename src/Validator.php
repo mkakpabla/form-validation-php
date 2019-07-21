@@ -17,6 +17,7 @@ class Validator
      */
     public $patterns = [
         'alpha'         => '/[a-zA-Z]+/',
+        'alphaNum'      => '/[a-zA-Z0-9]+/',
         'slug'          => '/[a-zA-Z0-9-]+/',
         'integer'       => '/[0-9]+/',
         'text'          => '/[a-zA-Z0-9-_ ]+/'
@@ -28,7 +29,8 @@ class Validator
     private $message = [
         
         'required'   => 'Le champ %s est requis',
-        'alpha'      => 'Le %s  n\'est pas valide(Alphabétique)',
+        'alpha'      => 'Le %s n\'est pas valide(Alphabétique)',
+        'alphaNum'   => 'Le %s n\'est pas valide(Alphanumérique)',
         'notEmpty'   => 'Le champ %s ne peut être vide',
         'integer'    => 'le %s doit être un entier(Ex: 1234)',
         'email'      => "Le champ %s n'est pas un email valide",
@@ -167,6 +169,19 @@ class Validator
             $this->addError($key, $rule);
         }
     }
+
+    /**
+     * @param string $key
+     * @param string $rule
+     */
+    private function alphaNum(string $key, string $rule)
+    {
+        $value = $this->getValue($key);
+        if (!preg_match($this->patterns[$rule], $value)) {
+            $this->addError($key, $rule);
+        }
+    }
+
 
     /**
      * @param string $key
