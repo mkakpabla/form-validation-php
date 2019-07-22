@@ -1,4 +1,4 @@
-# ZenValidator
+# Zen Validator
 Zen Validator is a simple PHP validation library
 
 ## Usage
@@ -24,3 +24,4 @@ We will have in our example above a table containing two errors
  * `alpha` - Content of field must be alphabetic
  * `integer` - Must be integer number
  * `text` - Field must be a text
+ * `length` - Verify the length of field value

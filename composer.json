@@ -12,7 +12,7 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
-            "Zenthos\\Validation\\": "src",
+            "Zen\\Validation\\": "src",
             "Tests\\": "tests"
         }
     },

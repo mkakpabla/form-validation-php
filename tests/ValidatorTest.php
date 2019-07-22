@@ -3,7 +3,7 @@
 namespace Test;
 
 use PHPUnit\Framework\TestCase;
-use Zenthos\Validation\Validator;
+use Zen\Validation\Validator;
 class ValidatorTest extends TestCase
 {
 
@@ -125,5 +125,20 @@ class ValidatorTest extends TestCase
         ]);
         $validator->validate($data);
         $this->assertEquals("Le champ summary n'est pas un text valide", $validator->errors('summary'));
+    }
+
+    public function testLength()
+    {
+        $data = [
+            'author' => 'Germaine',
+            'author2' => 'Germaine',
+        ];
+        $validator = new Validator([
+            'author' => 'required|length:10,20',
+            'author2' => 'required|length:10'
+        ]);
+        $validator->validate($data);
+        $this->assertEquals('Le champs author doit contenir entre 10 et 20 caractères', $validator->errors('author'));
+        $this->assertEquals('Le champs author2 doit contenir plus de 10 caractères', $validator->errors('author2'));
     }
 }

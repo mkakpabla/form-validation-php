@@ -1,5 +1,8 @@
 <?php
-namespace Zenthos\Validation;
+namespace Zen\Validation;
+
+use mysql_xdevapi\Exception;
+use phpDocumentor\Reflection\DocBlock\Tags\Throws;
 
 /**
  * class Validator
@@ -27,14 +30,17 @@ class Validator
      * @var array
      */
     private $message = [
-        
-        'required'   => 'Le champ %s est requis',
-        'alpha'      => 'Le %s n\'est pas valide(Alphabétique)',
-        'alphaNum'   => 'Le %s n\'est pas valide(Alphanumérique)',
-        'notEmpty'   => 'Le champ %s ne peut être vide',
-        'integer'    => 'le %s doit être un entier(Ex: 1234)',
-        'email'      => "Le champ %s n'est pas un email valide",
-        'text'       => "Le champ %s n'est pas un text valide"
+        'required'          => 'Le champ %s est requis',
+        'alpha'             => 'Le %s n\'est pas valide(Alphabétique)',
+        'alphaNum'          => 'Le %s n\'est pas valide(Alphanumérique)',
+        'notEmpty'          => 'Le champ %s ne peut être vide',
+        'integer'           => 'le %s doit être un entier(Ex: 1234)',
+        'email'             => "Le champ %s n'est pas un email valide",
+        'text'              => "Le champ %s n'est pas un text valide",
+        'min'               => 'Le champs %s doit contenir plus de %d caractères',
+        'max'               => 'Le champs %s doit contenir moins de %d caractères',
+        'between'           => 'Le champs %s doit contenir entre %d et %d caractères',
+        'datetime'          => 'Le champs %s doit être une date valide'
     ];
     /**
      * @var array
@@ -70,26 +76,26 @@ class Validator
         foreach ($this->rules as $key => $rule) {
             $rules = explode('|', $rule);
             foreach ($rules as $rule) {
-                $this->$rule($key, $rule);
+                $r = explode(':', $rule);
+                if (count($r) > 1) {
+                    $rule = $r[0];
+                    $params = explode(',', end($r));
+                    $this->$rule($key, $rule, $params);
+                } else {
+                    try {
+                        $this->$rule($key, $rule);
+                    } catch (RuleException $exception) {
+                        echo $exception->getMessage();
+                    }
+
+                }
             }
-            /*
-            if (in_array('required', $rules)) {
-                $this->required($key, 'required');
-            }
-            if (in_array('notEmpty', $rules)) {
-                $this->notEmpty($key, 'notEmpty');
-            }
-            if (in_array('alpha', $rules)) {
-                $this->alpha($key, 'alpha');
-            }
-            if (in_array('integer', $rules)) {
-                $this->integer($key, 'integer');
-            }*/
         }
         return $this;
     }
 
     /**
+     * @param string|null $key
      * @return array|string
      */
     public function errors(?string $key = null)
@@ -111,12 +117,14 @@ class Validator
     /**
      * @param string $key
      * @param string $rule
+     * @param array|null $attributes
      */
-    private function addError(string $key, string $rule)
+    private function addError(string $key, string $rule, ?array $attributes = [])
     {
         if (!array_key_exists($key, $this->errors)) {
             if (array_key_exists($rule, $this->message)) {
-                $this->errors[$key] = sprintf($this->message[$rule], $key);
+                $params = array_merge([$this->message[$rule], $key], $attributes);
+                $this->errors[$key] = (string)call_user_func_array('sprintf', $params);
             }
         }
     }
@@ -210,4 +218,25 @@ class Validator
             $this->addError($key, $rule);
         }
     }
+
+
+
+    private function length(string $key, string $rule, $params)
+    {
+        $value = $this->getValue($key);
+        $length = mb_strlen($value);
+        if (count($params) === 2) {
+            $min = (int)min($params);
+            $max = (int)max($params);
+            if (!is_null($min) && !is_null($max) && ($length < $min || $length > $max)) {
+                $this->addError($key, 'between', [$min, $max]);
+            }
+        } elseif (count($params) === 1) {
+            $min = (int)min($params);
+            if (!is_null($min) && $length < $min) {
+                $this->addError($key, 'min', [$min]);
+            }
+        }
+    }
+
 }
