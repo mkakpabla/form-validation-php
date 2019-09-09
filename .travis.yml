@@ -1,0 +1,11 @@
+language: php
+
+php:
+  - 7.2
+
+install:
+  - composer selfupdate
+  - composer install
+
+script:
+  - ./vendor/bin/phpunit --colors

@@ -1,9 +1,6 @@
 <?php
 namespace Zen\Validation;
 
-use mysql_xdevapi\Exception;
-use phpDocumentor\Reflection\DocBlock\Tags\Throws;
-
 /**
  * class Validator
  *
@@ -69,28 +66,12 @@ class Validator
     /**
      * @param array $datas
      * @return $this
+     * @throws \Exception
      */
     public function validate(array $datas): self
     {
         $this->datas = $datas;
-        foreach ($this->rules as $key => $rule) {
-            $rules = explode('|', $rule);
-            foreach ($rules as $rule) {
-                $r = explode(':', $rule);
-                if (count($r) > 1) {
-                    $rule = $r[0];
-                    $params = explode(',', end($r));
-                    $this->$rule($key, $rule, $params);
-                } else {
-                    try {
-                        $this->$rule($key, $rule);
-                    } catch (RuleException $exception) {
-                        echo $exception->getMessage();
-                    }
-
-                }
-            }
-        }
+        $this->ruleParse();
         return $this;
     }
 
@@ -112,6 +93,22 @@ class Validator
     public function isValid(): bool
     {
         return empty($this->errors);
+    }
+
+
+    private function ruleParse()
+    {
+        foreach ($this->rules as $key => $rules) {
+            foreach ($rules as $rule) {
+                if (preg_match("/[a-z]+/", $rule)) {
+                    if (method_exists($this, $rule)) {
+                        call_user_func_array([$this, $rule], [$key, $rule]);
+                    } else {
+                        throw new UndifedRuleException('Undifed Rule ' . $rule);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -145,8 +142,9 @@ class Validator
      * Vérifie si le champ existe
      * @param string $key
      * @param string $rule
+     * @return void
      */
-    private function required(string $key, string $rule): void
+    private function required(string $key, string $rule)
     {
         $value = $this->getValue($key);
         if (is_null($value)) {
