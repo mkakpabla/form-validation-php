@@ -5,8 +5,8 @@ Zen Validator is a simple PHP validation library
 To use it we create a new validation instance which takes into account the validation rules which is an array. Here is an exemple
 ```php
 $validator = new Validator([
-  'email'  => ['required','email'],
-  'title' => ['required','notEmpty']
+  'email'  => 'required|email',
+  'title' => 'required|notEmpty'
   ]);
 ```
 After:
