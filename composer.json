@@ -1,6 +1,6 @@
 {
     "name": "mkakpabla/validation",
-    "description": "A Simple data Validation in PHP",
+    "description": "A simple personal form validator in PHP",
     "type": "library",
     "license": "MIT",
     "authors": [
