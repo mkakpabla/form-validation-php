@@ -1,6 +1,8 @@
 <?php
 namespace Zen\Validation;
 
+use Exception;
+
 /**
  * class Validator
  *
@@ -11,16 +13,17 @@ namespace Zen\Validation;
  */
 class Validator
 {
+    use Rules;
 
     /**
      * @var array
      */
     public $patterns = [
-        'alpha'         => '/[a-zA-Z]+/',
-        'alphaNum'      => '/[a-zA-Z0-9]+/',
+        'alpha'         => '[\p{L}]+',
+        'alphaNum'      => '[\p{L}0-9]+',
         'slug'          => '/[a-zA-Z0-9-]+/',
         'integer'       => '/[0-9]+/',
-        'text'          => '/[a-zA-Z0-9-_ ]+/'
+        'text'          => '[\p{L}0-9\s-.,;:!"%&()?+\'°#\/@]+'
     ];
 
     /**
@@ -53,38 +56,38 @@ class Validator
      * @var array
      */
     private $rules;
+    /**
+     * @var array
+     */
+    private $inputs;
 
     /**
      * Validator constructor.
+     * @param array $inputs
      * @param array $rules
      */
-    public function __construct(array $rules)
+    public function __construct(array $inputs, array $rules)
     {
         $this->rules = $rules;
+        $this->inputs = $inputs;
     }
 
     /**
-     * @param array $datas
      * @return $this
-     * @throws \Exception
+     * @throws UndifedRuleException
      */
-    public function validate(array $datas): self
+    public function validate(): self
     {
-        $this->datas = $datas;
-        $this->ruleParse();
+        $this->callRules();
         return $this;
     }
 
     /**
-     * @param string|null $key
-     * @return array|string
+     * @return Errors
      */
-    public function errors(?string $key = null)
+    public function errors(): Errors
     {
-        if(is_null($key)) {
-            return $this->errors;
-        }
-        return $this->errors[$key];
+        return new Errors($this->errors);
     }
 
     /**
@@ -98,11 +101,30 @@ class Validator
 
     private function ruleParse()
     {
-        foreach ($this->rules as $key => $rules) {
+        $rules = [];
+        foreach ($this->rules as $key => $rule) {
+            $rules[$key] = explode('|', trim($rule));
+        }
+        return $rules;
+    }
+
+    private function callRules()
+    {
+        $regex = '/^('.$this->patterns['alpha'].')$/u';
+        foreach ($this->ruleParse() as $key => $rules) {
             foreach ($rules as $rule) {
-                if (preg_match("/[a-z]+/", $rule)) {
+                if (preg_match($regex, $rule)) {
                     if (method_exists($this, $rule)) {
                         call_user_func_array([$this, $rule], [$key, $rule]);
+                    } else {
+                        throw new UndifedRuleException('Undifed Rule ' . $rule);
+                    }
+                } else {
+                    $pieces = explode(':', $rule);
+                    $rule = $pieces[0];
+                    $params = explode(',', $pieces[1]);
+                    if (method_exists($this, $rule)) {
+                        call_user_func_array([$this, $rule], [$key, $rule, $params]);
                     } else {
                         throw new UndifedRuleException('Undifed Rule ' . $rule);
                     }
@@ -110,7 +132,6 @@ class Validator
             }
         }
     }
-
     /**
      * @param string $key
      * @param string $rule
@@ -132,109 +153,10 @@ class Validator
      */
     private function getValue(string $key)
     {
-        if (array_key_exists($key, $this->datas)) {
-            return $this->datas[$key];
+        if (array_key_exists($key, $this->inputs)) {
+            return $this->inputs[$key];
         }
         return null;
-    }
-
-    /***
-     * Vérifie si le champ existe
-     * @param string $key
-     * @param string $rule
-     * @return void
-     */
-    private function required(string $key, string $rule)
-    {
-        $value = $this->getValue($key);
-        if (is_null($value)) {
-            $this->addError($key, $rule);
-        }
-    }
-
-    /**
-     * @param string $key
-     * @param string $rule
-     */
-    private function notEmpty(string $key, string $rule)
-    {
-        $value = $this->getValue($key);
-        if (is_null($value) || empty($value)) {
-            $this->addError($key, $rule);
-        }
-    }
-
-    /**
-     * @param string $key
-     * @param string $rule
-     */
-    private function alpha(string $key, string $rule)
-    {
-        $value = $this->getValue($key);
-        if (!preg_match($this->patterns[$rule], $value)) {
-            $this->addError($key, $rule);
-        }
-    }
-
-    /**
-     * @param string $key
-     * @param string $rule
-     */
-    private function alphaNum(string $key, string $rule)
-    {
-        $value = $this->getValue($key);
-        if (!preg_match($this->patterns[$rule], $value)) {
-            $this->addError($key, $rule);
-        }
-    }
-
-
-    /**
-     * @param string $key
-     * @param string $rule
-     */
-    private function integer(string $key, string $rule)
-    {
-        $value = $this->getValue($key);
-        if (!preg_match($this->patterns[$rule], $value)) {
-            $this->addError($key, $rule);
-        }
-    }
-
-    private function email(string $key, string $rule)
-    {
-        $value = $this->getValue($key);
-        if(!filter_var($value, FILTER_VALIDATE_EMAIL)) {
-            $this->addError($key, $rule);
-        }
-    }
-
-    private function text(string $key, string $rule)
-    {
-        $value = $this->getValue($key);
-        if(!preg_match($this->patterns[$rule], $value)) {
-            $this->addError($key, $rule);
-        }
-    }
-
-
-
-    private function length(string $key, string $rule, $params)
-    {
-        $value = $this->getValue($key);
-        $length = mb_strlen($value);
-        if (count($params) === 2) {
-            $min = (int)min($params);
-            $max = (int)max($params);
-            if (!is_null($min) && !is_null($max) && ($length < $min || $length > $max)) {
-                $this->addError($key, 'between', [$min, $max]);
-            }
-        } elseif (count($params) === 1) {
-            $min = (int)min($params);
-            if (!is_null($min) && $length < $min) {
-                $this->addError($key, 'min', [$min]);
-            }
-        }
     }
 
 }

@@ -2,3 +2,5 @@
 .git
 .phpunit.result.cache
 vendor
+public
+.vs
