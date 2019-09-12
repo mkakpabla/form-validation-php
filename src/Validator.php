@@ -1,8 +1,6 @@
 <?php
 namespace Zen\Validation;
 
-use Exception;
-
 /**
  * class Validator
  *
@@ -103,7 +101,7 @@ class Validator
     {
         $rules = [];
         foreach ($this->rules as $key => $rule) {
-            $rules[$key] = explode('|', trim($rule));
+            $rules[$key] = explode('|', $rule);
         }
         return $rules;
     }
@@ -112,7 +110,9 @@ class Validator
     {
         $regex = '/^('.$this->patterns['alpha'].')$/u';
         foreach ($this->ruleParse() as $key => $rules) {
+
             foreach ($rules as $rule) {
+                $rule = trim($rule);
                 if (preg_match($regex, $rule)) {
                     if (method_exists($this, $rule)) {
                         call_user_func_array([$this, $rule], [$key, $rule]);
@@ -121,7 +121,7 @@ class Validator
                     }
                 } else {
                     $pieces = explode(':', $rule);
-                    $rule = $pieces[0];
+                    $rule = trim($pieces[0]);
                     $params = explode(',', $pieces[1]);
                     if (method_exists($this, $rule)) {
                         call_user_func_array([$this, $rule], [$key, $rule, $params]);
@@ -158,5 +158,6 @@ class Validator
         }
         return null;
     }
+
 
 }

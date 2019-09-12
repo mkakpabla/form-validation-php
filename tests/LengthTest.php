@@ -17,7 +17,7 @@ class LengthTest extends TestCase
             'author2' => 'Germaine',
         ];
         $validator = new Validator($data, [
-            'author' => 'required|length:10,20',
+            'author' => 'required   |length:10,20',
             'author2' => 'required|length:10'
         ]);
         $validator->validate();
