@@ -89,6 +89,16 @@ class Validator
     }
 
     /**
+     * @param array $messages
+     * @return $this
+     */
+    public function addErrorsMessages(array $messages)
+    {
+        $this->message = array_merge($this->message, $messages);
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isValid(): bool
@@ -97,6 +107,9 @@ class Validator
     }
 
 
+    /**
+     * @return array
+     */
     private function ruleParse()
     {
         $rules = [];
@@ -106,6 +119,9 @@ class Validator
         return $rules;
     }
 
+    /**
+     * @throws UndifedRuleException
+     */
     private function callRules()
     {
         $regex = '/^('.$this->patterns['alpha'].')$/u';
@@ -140,7 +156,9 @@ class Validator
     private function addError(string $key, string $rule, ?array $attributes = [])
     {
         if (!array_key_exists($key, $this->errors)) {
-            if (array_key_exists($rule, $this->message)) {
+            if (array_key_exists($key .'.'.$rule, $this->message)) {
+                $this->errors[$key] = $this->message[$key .'.'.$rule];
+            } elseif (array_key_exists($rule, $this->message)) {
                 $params = array_merge([$this->message[$rule], $key], $attributes);
                 $this->errors[$key] = (string)call_user_func_array('sprintf', $params);
             }
@@ -158,6 +176,5 @@ class Validator
         }
         return null;
     }
-
 
 }

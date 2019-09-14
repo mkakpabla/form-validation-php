@@ -22,7 +22,7 @@ class IntegerTest extends TestCase
             'author' => 'required|notEmpty',
             'price' => 'required|notEmpty|integer'
         ]);
-        $validator->validate($data);
+        $validator->validate();
         $this->assertContains('le price doit être un entier(Ex: 1234)', $validator->errors());
         $this->assertEquals(false, $validator->isValid());
     }

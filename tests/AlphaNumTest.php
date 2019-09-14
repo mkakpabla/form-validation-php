@@ -9,6 +9,8 @@ use Zen\Validation\Validator;
 
 class AlphaNumTest extends TestCase
 {
+
+
     public function testAlphaNum()
     {
         $data = [
