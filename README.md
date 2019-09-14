@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/mkakpabla/form-validation-php.svg?branch=master)](https://travis-ci.org/mkakpabla/form-validation-php)
 # Zen Validator
 Zen Validator is a simple PHP validation library
 
