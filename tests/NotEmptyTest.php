@@ -3,7 +3,6 @@
 
 namespace Tests;
 
-
 use PHPUnit\Framework\TestCase;
 use Zen\Validation\Validator;
 
@@ -24,5 +23,4 @@ class NotEmptyTest extends TestCase
         $this->assertContains('Le champ author ne peut être vide', $validator->errors());
         $this->assertEquals(false, $validator->isValid());
     }
-
 }

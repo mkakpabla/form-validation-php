@@ -3,7 +3,6 @@
 
 namespace Tests;
 
-
 use PHPUnit\Framework\TestCase;
 use Zen\Validation\Validator;
 
@@ -25,5 +24,4 @@ class TextTest extends TestCase
         $validator->validate();
         $this->assertEquals("Le champ summary n'est pas un text valide", $validator->errors()->get('summary'));
     }
-
 }

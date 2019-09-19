@@ -3,7 +3,6 @@
 
 namespace Tests;
 
-
 use PHPUnit\Framework\TestCase;
 use Zen\Validation\Validator;
 
@@ -23,5 +22,4 @@ class AlphaTest extends TestCase
         $validator->validate();
         $this->assertContains('Le title n\'est pas valide(Alphabétique)', $validator->errors());
     }
-
 }

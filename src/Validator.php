@@ -1,60 +1,62 @@
 <?php
 namespace Zen\Validation;
 
+use Zen\Validation\Rules\Alpha;
+use Zen\Validation\Rules\AlphaNum;
+use Zen\Validation\Rules\Confirm;
+use Zen\Validation\Rules\DateTime;
+use Zen\Validation\Rules\Email;
+use Zen\Validation\Rules\Integer;
+use Zen\Validation\Rules\Length;
+use Zen\Validation\Rules\NotEmpty;
+use Zen\Validation\Rules\Required;
+use Zen\Validation\Rules\Slug;
+use Zen\Validation\Rules\Text;
+use Zen\Validation\Rules\Time;
+
 /**
  * class Validator
- *
- * Simple de Validator class
- *
  * @author Michel Akpabla <michel.akpabla2@gmail.com>
  * @copyright (c) 2019, Michel Akpabla
  */
 class Validator
 {
-    use Rules;
 
     /**
+     * Liste des regles de validation
      * @var array
      */
-    public $patterns = [
-        'alpha'         => '[\p{L}]+',
-        'alphaNum'      => '[\p{L}0-9]+',
-        'slug'          => '/[a-zA-Z0-9-]+/',
-        'integer'       => '/[0-9]+/',
-        'text'          => '[\p{L}0-9\s-.,;:!"%&()?+\'°#\/@]+'
+    private $rulesList = [
+        'required'        => Required::class,
+        'alpha'           => Alpha::class,
+        'alphaNum'        => AlphaNum::class,
+        'email'           => Email::class,
+        'notEmpty'        => NotEmpty::class,
+        'integer'         => Integer::class,
+        'text'            => Text::class,
+        'length'          => Length::class,
+        'confirm'         => Confirm::class,
+        'datetime'        => DateTime::class,
+        'time'            => Time::class,
+        'slug'            => Slug::class,
     ];
 
-    /**
-     * @var array
-     */
-    private $message = [
-        'required'          => 'Le champ %s est requis',
-        'alpha'             => 'Le %s n\'est pas valide(Alphabétique)',
-        'alphaNum'          => 'Le %s n\'est pas valide(Alphanumérique)',
-        'notEmpty'          => 'Le champ %s ne peut être vide',
-        'integer'           => 'le %s doit être un entier(Ex: 1234)',
-        'email'             => "Le champ %s n'est pas un email valide",
-        'text'              => "Le champ %s n'est pas un text valide",
-        'min'               => 'Le champs %s doit contenir plus de %d caractères',
-        'max'               => 'Le champs %s doit contenir moins de %d caractères',
-        'between'           => 'Le champs %s doit contenir entre %d et %d caractères',
-        'datetime'          => 'Le champs %s doit être une date valide'
-    ];
-    /**
-     * @var array
-     */
-    private $datas = [];
+    private $rules = [];
 
     /**
+     * Les messages d'erreurs
+     * @var array
+     */
+    private $customMessages = [];
+
+    /**
+     * La liste des erreurs après validation
      * @var array
      */
     private $errors = [];
 
     /**
-     * @var array
-     */
-    private $rules;
-    /**
+     * Les données à valider
      * @var array
      */
     private $inputs;
@@ -89,12 +91,13 @@ class Validator
     }
 
     /**
+     * Permet l'ajout des erreurs personnalisés
      * @param array $messages
      * @return $this
      */
     public function addErrorsMessages(array $messages)
     {
-        $this->message = array_merge($this->message, $messages);
+        $this->customMessages = array_merge($this->customMessages, $messages);
         return $this;
     }
 
@@ -124,14 +127,14 @@ class Validator
      */
     private function callRules()
     {
-        $regex = '/^('.$this->patterns['alpha'].')$/u';
+        $pattern = '[\p{L}]+';
+        $regex = '/^('.$pattern.')$/u';
         foreach ($this->ruleParse() as $key => $rules) {
-
             foreach ($rules as $rule) {
                 $rule = trim($rule);
                 if (preg_match($regex, $rule)) {
-                    if (method_exists($this, $rule)) {
-                        call_user_func_array([$this, $rule], [$key, $rule]);
+                    if (array_key_exists($rule, $this->rulesList)) {
+                        call_user_func_array(new $this->rulesList[$rule](), [$this, $key, $rule]);
                     } else {
                         throw new UndifedRuleException('Undifed Rule ' . $rule);
                     }
@@ -139,8 +142,8 @@ class Validator
                     $pieces = explode(':', $rule);
                     $rule = trim($pieces[0]);
                     $params = explode(',', $pieces[1]);
-                    if (method_exists($this, $rule)) {
-                        call_user_func_array([$this, $rule], [$key, $rule, $params]);
+                    if (array_key_exists($rule, $this->rulesList)) {
+                        call_user_func_array(new $this->rulesList[$rule]($params), [$this, $key, $rule]);
                     } else {
                         throw new UndifedRuleException('Undifed Rule ' . $rule);
                     }
@@ -153,14 +156,13 @@ class Validator
      * @param string $rule
      * @param array|null $attributes
      */
-    private function addError(string $key, string $rule, ?array $attributes = [])
+    public function addError(string $key, string $rule, ?array $attributes = [])
     {
         if (!array_key_exists($key, $this->errors)) {
-            if (array_key_exists($key .'.'.$rule, $this->message)) {
-                $this->errors[$key] = $this->message[$key .'.'.$rule];
-            } elseif (array_key_exists($rule, $this->message)) {
-                $params = array_merge([$this->message[$rule], $key], $attributes);
-                $this->errors[$key] = (string)call_user_func_array('sprintf', $params);
+            if (array_key_exists($key .'.'.$rule, $this->customMessages)) {
+                $this->errors[$key] = $this->customMessages[$key .'.'.$rule];
+            } else {
+                $this->errors[$key] = (string)(new ValidationError($key, $rule, $attributes));
             }
         }
     }
@@ -169,12 +171,11 @@ class Validator
      * @param string $key
      * @return mixed|null
      */
-    private function getValue(string $key)
+    public function getValue(string $key)
     {
         if (array_key_exists($key, $this->inputs)) {
             return $this->inputs[$key];
         }
         return null;
     }
-
 }

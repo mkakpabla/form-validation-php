@@ -3,7 +3,6 @@
 
 namespace Tests;
 
-
 use PHPUnit\Framework\TestCase;
 use Zen\Validation\Validator;
 
@@ -25,5 +24,4 @@ class AddErrorMessagesTest extends TestCase
             ->validate();
         $this->assertContains('le titre est obligatoire', $validator->errors());
     }
-
 }

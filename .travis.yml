@@ -9,3 +9,5 @@ install:
 
 script:
   - ./vendor/bin/phpunit --colors
+  - ./vendor/bin/phpcs
+  - ./vendor/bin/phpcbs

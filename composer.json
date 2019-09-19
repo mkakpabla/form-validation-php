@@ -1,6 +1,6 @@
 {
     "name": "mkakpabla/validation",
-    "description": "A simple personal form validator in PHP",
+    "description": "A simple form validator in PHP",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -21,6 +21,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^8.2",
-        "symfony/var-dumper": "^4.3"
+        "symfony/var-dumper": "^4.3",
+        "squizlabs/php_codesniffer": "^3.4"
     }
 }

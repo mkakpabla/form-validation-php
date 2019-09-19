@@ -3,7 +3,6 @@
 
 namespace Tests;
 
-
 use PHPUnit\Framework\TestCase;
 use Zen\Validation\Validator;
 
@@ -24,5 +23,4 @@ class EmailTest extends TestCase
         $this->assertContains('Le title n\'est pas valide(Alphabétique)', $validator->errors());
         $this->assertContains('Le champ email n\'est pas un email valide', $validator->errors());
     }
-
 }

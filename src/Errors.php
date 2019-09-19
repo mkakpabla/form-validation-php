@@ -3,7 +3,6 @@
 
 namespace Zen\Validation;
 
-
 use Traversable;
 
 class Errors implements \IteratorAggregate
