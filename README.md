@@ -34,3 +34,11 @@ $validator->errors()
  * `alphaNum` - Content of field must be alphanumeric
  * `integer` - Must be integer number
  * `text` - Field must be a text
+ * `datetime` - Field must be a datetime
+ * `time` - Field must be a time
+ * `date` - Field must be a date
+ * `slug` - Field must be a slug
+
+
+
+

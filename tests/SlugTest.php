@@ -26,5 +26,4 @@ class SlugTest extends TestCase
         $this->assertContains("Le champ slug3 n'est pas un slug valide", $validator->errors());
         $this->assertContains("Le champ slug4 n'est pas un slug valide", $validator->errors());
     }
-
 }
