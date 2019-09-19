@@ -38,6 +38,8 @@ $validator->errors()
  * `time` - Field must be a time
  * `date` - Field must be a date
  * `slug` - Field must be a slug
+ * `confirm` - Field must be a same as another field
+
 
 
 
