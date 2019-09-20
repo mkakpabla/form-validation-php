@@ -1,29 +1,68 @@
 [![Build Status](https://travis-ci.org/mkakpabla/form-validation-php.svg?branch=master)](https://travis-ci.org/mkakpabla/form-validation-php)
-# Zen Validator
-Zen Validator is a simple PHP validation library
+# Zen Validation - PHP Validation Library
 
-## Usage
-To use it we create a new validation instance which takes into account the validation rules which is an array. Here is an exemple
+## Features
+
+* API like Laravel validation.
+* Array validation.
+* Custom validation messages.
+
+## Requirements
+
+* PHP 7.2 or higher
+* Composer for installation
+
+## Quick Start
+
+#### Installation
+
+```bash
+composer require "mkakpabla/validation"
+```
+
+#### Usage
+
+Examples :
+
 ```php
-$validator = new Validator([
-  'email'  => 'required|email',
+<?php
+
+require 'vendor/autoload.php';
+
+use Zen\Validation\Validator;
+
+$validator = new Validator([], [
   'title' => 'required|notEmpty'
+  'slug' => 'required|slug'
+  'content' => 'required|text'
   ]);
-```
-After:
-```php
-$data = [];
-$validator->validate($data)
-```
-We will have in our example above a table containing two errors.
-## Get validation erors
-```php
-$data = [];
-$validator->errors()
-```
-`$validator->errors()`: Return in array the errors of validation
 
+$validator->validate()
 
+if(!$validator->isValid()) {
+  var_dump($validator->errors())
+} else {
+  
+  // Formulaire valide
+  // Traitements
+}
+```
+ 
+#### Custom Messages for Validator
+```php
+<?php
+
+require 'vendor/autoload.php';
+
+use Zen\Validation\Validator;
+$validator = new Validator($data, [
+  'title'  => 'required',
+  ]);
+$validator->addErrorsMessages([
+  'title.required' => "le titre est obligatoire"
+]);
+$validator->validate();
+````
 
 ## Validation Rules
 
