@@ -37,7 +37,6 @@ class Validator
         'notEmpty'        => NotEmpty::class,
         'integer'         => Integer::class,
         'text'            => Text::class,
-        'length'          => Length::class,
         'confirm'         => Confirm::class,
         'datetime'        => DateTime::class,
         'time'            => Time::class,

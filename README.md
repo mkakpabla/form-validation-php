@@ -32,15 +32,15 @@ require 'vendor/autoload.php';
 use Zen\Validation\Validator;
 
 $validator = new Validator([], [
-  'title' => 'required|notEmpty'
-  'slug' => 'required|slug'
+  'title' => 'required|notEmpty',
+  'slug' => 'required|slug',
   'content' => 'required|text'
   ]);
 
-$validator->validate()
+$validator->validate();
 
 if(!$validator->isValid()) {
-  var_dump($validator->errors())
+  var_dump($validator->errors());
 } else {
   
   // Formulaire valide
@@ -78,6 +78,10 @@ $validator->validate();
  * `date` - Field must be a date
  * `slug` - Field must be a slug
  * `confirm` - Field must be a same as another field
+ * `min:number` - The field under this rule must have a size biger or equal than the given number
+ * `max:number` - The field under this rule must have a size lower or equal than the given number
+ * `between:min,max` - The field under this rule must have a size between min and max params 
+ 
 
 
 
