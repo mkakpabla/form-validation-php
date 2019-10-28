@@ -18,6 +18,11 @@ class Errors implements \IteratorAggregate
         $this->errors = $errors;
     }
 
+    public function toArray(): array
+    {
+        return $this->errors;
+    }
+
     public function get(string $key)
     {
         if ($this->has($key)) {

@@ -24,6 +24,8 @@ class ValidationError
         'date'              => 'Le champ %s doit être une date valide',
         'confirm'           => 'Vous n\'avez pas confirmé le champs %s',
         'slug'              => 'Le champ %s n\'est pas un slug valide',
+        'file'              => 'Le champ %s doit être un fichier valide',
+        'choice'            => 'La valeur du champ %s doit être dans cette liste (%s)'
 
     ];
     /**

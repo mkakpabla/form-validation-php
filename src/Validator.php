@@ -4,9 +4,11 @@ namespace Zen\Validation;
 use Zen\Validation\Rules\Alpha;
 use Zen\Validation\Rules\AlphaNum;
 use Zen\Validation\Rules\Between;
+use Zen\Validation\Rules\Choice;
 use Zen\Validation\Rules\Confirm;
 use Zen\Validation\Rules\DateTime;
 use Zen\Validation\Rules\Email;
+use Zen\Validation\Rules\File;
 use Zen\Validation\Rules\Integer;
 use Zen\Validation\Rules\Length;
 use Zen\Validation\Rules\Max;
@@ -44,6 +46,8 @@ class Validator
         'min'             => Min::class,
         'max'             => Max::class,
         'between'         => Between::class,
+        'file'            => File::class,
+        'choice'          => Choice::class,
     ];
 
     private $rules = [];

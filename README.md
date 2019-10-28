@@ -67,7 +67,7 @@ $validator->validate();
 ## Validation Rules
 
  * `required` - Field is required
- * `email` - Field must be a email
+ * `email` - Field must be email
  * `notEmpty` - Field did not be empty
  * `alpha` - Content of field must be alphabetic
  * `alphaNum` - Content of field must be alphanumeric
